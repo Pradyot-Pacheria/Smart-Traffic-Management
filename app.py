@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename, send_from_directory
 import os
 import subprocess
 import shutil
+import moviepy.editor as moviepy
 
 
 app = Flask(__name__)
@@ -12,9 +13,11 @@ uploads_dir = os.path.join(app.instance_path, 'uploads')
 
 os.makedirs(uploads_dir, exist_ok=True)
 
+VIDEO_PATH = " "
 @app.route("/")
 def hello_world():
     return render_template('index.html')
+
 
 
 @app.route("/detect", methods=['POST'])
@@ -22,12 +25,13 @@ def detect():
     if not request.method == "POST":
         return
     video = request.files['video']
-    video.save(os.path.join(uploads_dir, secure_filename(video.filename)))
+    VIDEO_PATH = os.path.join(uploads_dir, secure_filename(video.filename))
+    video.save(VIDEO_PATH)
+    with open("vp.txt", "w") as fp:
+        fp.write(f"{VIDEO_PATH}[*]{video.filename}")
     print(video)
     subprocess.run("ls",shell=True)
-    subprocess.run(['python', 'detect.py', '--source', os.path.join(uploads_dir, secure_filename(video.filename))],shell=True)
-
-
+    subprocess.run(['python', 'detect.py', '--source', VIDEO_PATH],shell=True)
 
     # return os.path.join(uploads_dir, secure_filename(video.filename))
     obj = secure_filename(video.filename)
@@ -36,6 +40,17 @@ def detect():
     dst_path = os.path.join('static',secure_filename(video.filename))
     shutil.copy(src_path,dst_path)
     return obj
+
+@app.route("/op")
+def op():
+    vp = ''
+    with open("vp.txt", 'r') as fp:
+        vp = fp.read()
+    _, name = vp.split("[*]")
+    return render_template('videos.html', parameter=[f"../static/{name}.mp4",f'../static/{name}'])
+
+# xyz.mp4
+# xyz.mp4.mp4
 
 @app.route('/return-files', methods=['GET'])
 def return_file():

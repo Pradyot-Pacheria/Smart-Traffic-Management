@@ -1,0 +1,31 @@
+.video {
+    height: 500px;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+}
+
+
+.box {
+    top: 60px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.head {
+    width: 100vw;
+    height: 50px;
+    align-self: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.cen {
+    align-self: center;
+    top: 70px;
+}
